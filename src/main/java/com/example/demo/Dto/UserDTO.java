@@ -17,6 +17,7 @@ public class UserDTO {
     @Size(min = 5, message = "user name should have at least 2 characters")
     private String address;
 
+    @NotEmpty(message = "Not empty Email")
     @Email(message = "Email must be valid")
     private String email;
 
