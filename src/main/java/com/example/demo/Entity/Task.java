@@ -1,5 +1,6 @@
 package com.example.demo.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity(name = "Task")
@@ -22,8 +23,7 @@ public class Task {
         this.status = status;
     }
 
-    public Task(long id, String description, StatusTask status, User user) {
-        this.id = id;
+    public Task(String description, StatusTask status, User user) {
         this.description = description;
         this.status = status;
         this.user = user;

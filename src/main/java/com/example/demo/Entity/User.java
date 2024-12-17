@@ -1,6 +1,9 @@
 package com.example.demo.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity(name = "Users")
 public class User {
@@ -13,6 +16,10 @@ public class User {
     private String name;
     private String address;
     private String email;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Task> tasks;
 
     public User() {
     }
@@ -53,5 +60,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
     }
 }

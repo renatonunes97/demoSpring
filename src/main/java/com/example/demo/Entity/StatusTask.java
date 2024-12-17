@@ -2,7 +2,7 @@ package com.example.demo.Entity;
 
 import jakarta.persistence.*;
 
-@Entity(name = "StatusTask")
+@Entity(name = "status_task")
 public class StatusTask {
 
     @Id
