@@ -73,10 +73,10 @@ public class TaskService implements GenericService {
             Task task = new Task();
             task.setId(taskDTO.getId());
             task.setDescription(taskDTO.getDescription());
-            Optional<User> optionalUser = userRepository.findById(taskDTO.getUserID());
-            task.setUser(optionalUser.orElseThrow(() -> new RuntimeException("User not found")));
-            Optional<StatusTask> optionalStatus = statusRepository.findById(taskDTO.getStatusID());
-            task.setStatus(optionalStatus.orElseThrow(()-> new RuntimeException("Status not found")));
+            User user = userRepository.findById(taskDTO.getUserID()).orElseThrow(()->new RuntimeException("User not exist"));
+            task.setUser(user);
+            StatusTask statusTask = statusRepository.findById(taskDTO.getStatusID()).orElseThrow(()-> new RuntimeException("Status is not valid"));
+            task.setStatus(statusTask);
             return task;
         }else{
             throw new IllegalArgumentException("Invalid object type. Expected TaskDTO.");
