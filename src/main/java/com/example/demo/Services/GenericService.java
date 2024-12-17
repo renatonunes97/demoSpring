@@ -8,5 +8,5 @@ public interface GenericService {
    Object convertToDTO(Object object);
    Object save(Object object);
    Object convertToEntity(Object object);
-   Object delete(long id);
+   Object delete(Long id);
 }

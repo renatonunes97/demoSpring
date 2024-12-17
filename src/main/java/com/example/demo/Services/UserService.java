@@ -1,6 +1,7 @@
 package com.example.demo.Services;
 
 
+import com.example.demo.Dto.TaskDTO;
 import com.example.demo.Dto.UserDTO;
 import com.example.demo.Entity.User;
 import com.example.demo.Repository.UserRepository;
@@ -59,7 +60,7 @@ public class UserService implements GenericService {
     }
 
     @Override
-    public Object delete(@RequestParam long userId) {
+    public Object delete(Long userId) {
         return userRepository.findById(userId).map(user -> {
             if(user.getTasks().isEmpty()){
                 userRepository.deleteById(user.getId());
@@ -69,4 +70,5 @@ public class UserService implements GenericService {
             }
         }).orElseThrow(()-> new RuntimeException("User Not found"));
     }
+
 }

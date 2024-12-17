@@ -14,6 +14,8 @@ import org.springframework.validation.ObjectError;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskService implements GenericService {
@@ -82,10 +84,40 @@ public class TaskService implements GenericService {
     }
 
     @Override
-    public Object delete(long id) {
+    public Object delete(Long id) {
         return taskRepository.findById(id).map(task -> {taskRepository.deleteById(task.getId());
             return convertToDTO(task);
         }).orElseThrow(()-> new RuntimeException("Task Not found"));
     }
+
+    public List<?> getTasksByStatus(long idStatus) {
+        return taskRepository.getTasksByStatus(idStatus)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<?> getTaskByUser(long idUser){
+        User users = userRepository.findById(idUser)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return users.getTasks().stream().map(this::convertToDTO).toList();
+    }
+
+    public List<?> filter(Long idUser, Long statusId){
+        if( idUser != null && statusId != null ){
+            return taskRepository.findByStatusIdAndUserId(statusId,idUser)
+                    .stream()
+                    .map(this::convertToDTO).toList();
+        }else if(statusId != null){
+            return taskRepository.getTasksByStatus(statusId)
+                    .stream()
+                    .map(this::convertToDTO).toList();
+        }else if (idUser !=null){
+            return getTaskByUser(idUser);
+        }else{
+            return getAllTask();
+        }
+    }
+
 
 }

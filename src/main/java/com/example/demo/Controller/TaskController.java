@@ -43,4 +43,20 @@ public class TaskController {
     public ResponseEntity<?> deleteTask(@RequestParam long taskId){
         return new ResponseEntity<>(taskService.delete(taskId),HttpStatus.OK);
     }
+
+    @GetMapping("/status/{statusId}")
+    public ResponseEntity<?> getTasksByStatus(@PathVariable long statusId){
+        return new ResponseEntity<>(taskService.getTasksByStatus(statusId),HttpStatus.OK);
+    }
+
+    @GetMapping("/userId")
+    public ResponseEntity<?> getTasksByUser(@RequestParam long userId){
+        return new ResponseEntity<>(taskService.getTaskByUser(userId),HttpStatus.OK);
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<?> filterTask(@RequestParam(required = false) Long userId , @RequestParam(required = false) Long statusId){
+        return new ResponseEntity<>(taskService.filter(userId,statusId),HttpStatus.OK);
+    }
+
 }
