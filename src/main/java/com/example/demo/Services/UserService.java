@@ -71,8 +71,12 @@ public class UserService implements GenericService {
         }).orElseThrow(()-> new RuntimeException("User Not found"));
     }
 
-    public Object filter(String name, String address, String email){
-
+    public List<?> filter(Long idUser,String name, String address, String email){
+        return getAll().stream()
+                .filter(user -> name == null || user.getName().contains(name))
+                .filter(user -> address == null || user.getAddress().contains(address))
+                .filter(user -> idUser == null || user.getId().equals(idUser))
+                .map(this::convertToDTO).toList();
     }
 
 

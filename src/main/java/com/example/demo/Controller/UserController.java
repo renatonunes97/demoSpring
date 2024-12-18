@@ -12,11 +12,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
-public class ControllerUser {
+public class UserController {
 
     @Autowired
-    private UserService userService;
+    private final UserService userService;
 
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
 
     @GetMapping("/hello")
@@ -38,6 +41,16 @@ public class ControllerUser {
     public ResponseEntity<?> deleteUser(@RequestParam long userId){
         return new ResponseEntity<>(userService.delete(userId),HttpStatus.OK);
     }
+
+    @GetMapping("/filter")
+    public ResponseEntity<?> filterUser(
+            @RequestParam (required = false) Long userId,
+            @RequestParam (required = false) String name,
+            @RequestParam (required = false) String address,
+            @RequestParam (required = false) String email){
+        return new ResponseEntity<>(userService.filter(userId,name,address,email),HttpStatus.OK);
+    }
+
 
 
 }

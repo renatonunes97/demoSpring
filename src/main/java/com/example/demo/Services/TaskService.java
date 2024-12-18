@@ -1,7 +1,6 @@
 package com.example.demo.Services;
 
 import com.example.demo.Dto.TaskDTO;
-import com.example.demo.Dto.UserDTO;
 import com.example.demo.Entity.StatusTask;
 import com.example.demo.Entity.Task;
 import com.example.demo.Entity.User;
@@ -10,11 +9,9 @@ import com.example.demo.Repository.TaskRepository;
 import com.example.demo.Repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.ObjectError;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collector;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -103,31 +100,43 @@ public class TaskService implements GenericService {
         return users.getTasks().stream().map(this::convertToDTO).toList();
     }
 
-    public List<?> filter(Long idUser, Long statusId, Long idTask){
-        if(idTask != null && idUser != null && statusId != null){
-            return taskRepository.findByStatusIdAndUserIdAndTasId(statusId,idUser,idTask)
+
+    /*
+    public List<?> filter(Long idUser, Long statusId, Long idTask) {
+        if (idTask != null && idUser != null && statusId != null) {
+            return taskRepository.findByStatusIdAndUserIdAndTaskId(statusId, idUser, idTask)
                     .stream()
                     .map(this::convertToDTO).toList();
-        } else if( idUser != null && statusId != null ){
-            return taskRepository.findByStatusIdAndUserId(statusId,idUser)
+        } else if (idUser != null && statusId != null) {
+            return taskRepository.findByStatusIdAndUserId(statusId, idUser)
                     .stream()
                     .map(this::convertToDTO).toList();
-        }else if(statusId != null){
+        } else if (idTask != null && statusId != null) {
+            return taskRepository.findByTaskIdAndStatusId(statusId, idTask)
+                    .stream()
+                    .map(this::convertToDTO).toList();
+        } else if (statusId != null) {
             return taskRepository.getTasksByStatus(statusId)
                     .stream()
                     .map(this::convertToDTO).toList();
-        }else if (idUser !=null) {
+        } else if (idUser != null) {
             return getTaskByUser(idUser);
-        }else if(idTask != null) {
+        } else if (idTask != null) {
             return taskRepository.findById(idTask)
                     .stream()
                     .map(this::convertToDTO).toList();
-        }else{
+        } else {
             return getAllTask();
         }
+
     }
-
-
-
+    */
+    public List<?> filter(Long idUser, Long statusId, Long idTask) {
+            return getAllTask().stream()
+                    .filter(task ->  statusId == null || task.getStatus().getId().equals(statusId))
+                    .filter(task ->  idUser  == null || task.getUser().getId().equals(idUser))
+                    .filter(task ->  idTask  == null || task.getId().equals(idTask))
+                    .map(this::convertToDTO).toList();
+    }
 
 }
