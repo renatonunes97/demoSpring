@@ -55,8 +55,11 @@ public class TaskController {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<?> filterTask(@RequestParam(required = false) Long userId , @RequestParam(required = false) Long statusId){
-        return new ResponseEntity<>(taskService.filter(userId,statusId),HttpStatus.OK);
+    public ResponseEntity<?> filterTask(
+            @RequestParam(required = false) Long userId ,
+            @RequestParam(required = false) Long statusId,
+            @RequestParam(required = false) Long idTask){
+        return new ResponseEntity<>(taskService.filter(userId,statusId,idTask),HttpStatus.OK);
     }
 
 }

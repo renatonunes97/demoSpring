@@ -103,8 +103,12 @@ public class TaskService implements GenericService {
         return users.getTasks().stream().map(this::convertToDTO).toList();
     }
 
-    public List<?> filter(Long idUser, Long statusId){
-        if( idUser != null && statusId != null ){
+    public List<?> filter(Long idUser, Long statusId, Long idTask){
+        if(idTask != null && idUser != null && statusId != null){
+            return taskRepository.findByStatusIdAndUserIdAndTasId(statusId,idUser,idTask)
+                    .stream()
+                    .map(this::convertToDTO).toList();
+        } else if( idUser != null && statusId != null ){
             return taskRepository.findByStatusIdAndUserId(statusId,idUser)
                     .stream()
                     .map(this::convertToDTO).toList();
@@ -112,12 +116,18 @@ public class TaskService implements GenericService {
             return taskRepository.getTasksByStatus(statusId)
                     .stream()
                     .map(this::convertToDTO).toList();
-        }else if (idUser !=null){
+        }else if (idUser !=null) {
             return getTaskByUser(idUser);
+        }else if(idTask != null) {
+            return taskRepository.findById(idTask)
+                    .stream()
+                    .map(this::convertToDTO).toList();
         }else{
             return getAllTask();
         }
     }
+
+
 
 
 }

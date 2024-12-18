@@ -71,4 +71,10 @@ public class UserService implements GenericService {
         }).orElseThrow(()-> new RuntimeException("User Not found"));
     }
 
+    public Object filter(String name, String address, String email){
+
+    }
+
+
+
 }
