@@ -15,7 +15,7 @@ public class TaskDTO {
     @NotNull(message = "status not be null")
     private long statusID;
 
-    private long userID;
+    private Long userID;
 
 
     public TaskDTO() {
@@ -45,11 +45,11 @@ public class TaskDTO {
         this.statusID = statusID;
     }
 
-    public long getUserID() {
+    public Long getUserID() {
         return userID;
     }
 
-    public void setUserID(long userID) {
+    public void setUserID(Long userID) {
         this.userID = userID;
     }
 }

@@ -58,4 +58,17 @@ public class TaskController {
         return new ResponseEntity<>(taskService.filter(userId,statusId,idTask),HttpStatus.OK);
     }
 
+    @PutMapping("/addTaskUser")
+    public ResponseEntity<?> associatedTask(
+            @RequestParam Long userId,
+            @RequestParam Long taskId
+    ){
+        try {
+            String response = (String) taskService.addTaskByUser(userId, taskId);
+            return ResponseEntity.ok(response);
+        }catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 }

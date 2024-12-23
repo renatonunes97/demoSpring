@@ -11,7 +11,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,7 +45,7 @@ public class TaskService implements GenericService {
             taskDTO.setId(task.getId());
             taskDTO.setDescription(task.getDescription());
             taskDTO.setStatusID(task.getStatus() !=null ? task.getStatus().getId(): 0);
-            taskDTO.setUserID(task.getUser() != null ? task.getUser().getId() : 0);
+            taskDTO.setUserID(task.getUser() != null ? task.getUser().getId() : null);
             return taskDTO;
         }else{
             throw new IllegalArgumentException("Invalid object type. Expected Task.");
@@ -68,10 +67,16 @@ public class TaskService implements GenericService {
     public Object convertToEntity(Object object) {
         if(object instanceof TaskDTO taskDTO){
             Task task = new Task();
-            task.setId(taskDTO.getId());
             task.setDescription(taskDTO.getDescription());
-            User user = userRepository.findById(taskDTO.getUserID()).orElseThrow(()->new RuntimeException("User not exist"));
-            task.setUser(user);
+
+            if (taskDTO.getUserID() != null) {
+                User user = userRepository.findById(taskDTO.getUserID())
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+                task.setUser(user);
+            } else {
+                task.setUser(null);  // Ou você pode deixar o usuário como null, conforme o comportamento desejado
+            }
+
             StatusTask statusTask = statusRepository.findById(taskDTO.getStatusID()).orElseThrow(()-> new RuntimeException("Status is not valid"));
             task.setStatus(statusTask);
             return task;
@@ -100,43 +105,27 @@ public class TaskService implements GenericService {
         return users.getTasks().stream().map(this::convertToDTO).toList();
     }
 
-
-    /*
-    public List<?> filter(Long idUser, Long statusId, Long idTask) {
-        if (idTask != null && idUser != null && statusId != null) {
-            return taskRepository.findByStatusIdAndUserIdAndTaskId(statusId, idUser, idTask)
-                    .stream()
-                    .map(this::convertToDTO).toList();
-        } else if (idUser != null && statusId != null) {
-            return taskRepository.findByStatusIdAndUserId(statusId, idUser)
-                    .stream()
-                    .map(this::convertToDTO).toList();
-        } else if (idTask != null && statusId != null) {
-            return taskRepository.findByTaskIdAndStatusId(statusId, idTask)
-                    .stream()
-                    .map(this::convertToDTO).toList();
-        } else if (statusId != null) {
-            return taskRepository.getTasksByStatus(statusId)
-                    .stream()
-                    .map(this::convertToDTO).toList();
-        } else if (idUser != null) {
-            return getTaskByUser(idUser);
-        } else if (idTask != null) {
-            return taskRepository.findById(idTask)
-                    .stream()
-                    .map(this::convertToDTO).toList();
-        } else {
-            return getAllTask();
-        }
-
-    }
-    */
     public List<?> filter(Long idUser, Long statusId, Long idTask) {
             return getAllTask().stream()
                     .filter(task ->  statusId == null || task.getStatus().getId().equals(statusId))
                     .filter(task ->  idUser  == null || task.getUser().getId().equals(idUser))
                     .filter(task ->  idTask  == null || task.getId().equals(idTask))
                     .map(this::convertToDTO).toList();
+    }
+
+    public Object addTaskByUser(Long idUser, Long idTask) {
+        User user = userRepository.findById(idUser).orElseThrow(() -> new RuntimeException("User don´t exist "));
+        Task task = taskRepository.findById(idTask).orElseThrow(() -> new RuntimeException("Task Not Found "));
+        if (task.getUser() == null) {
+            user.getTasks().add(task);
+            userRepository.save(user);
+            task.setUser(user);
+            taskRepository.save(task);
+            return "Task successfully added to user"+ user.getName();
+        }
+        else {
+            throw new RuntimeException("Task associated another user: id: " + task.getUser().getId() + ", Name:" + task.getUser().getName());
+        }
     }
 
 }
