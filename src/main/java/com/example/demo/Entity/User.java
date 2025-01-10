@@ -15,6 +15,7 @@ public class User {
     @Column(name = "name", nullable = false)
     private String name;
     private String address;
+    private String password;
     private String email;
 
     @OneToMany(mappedBy = "user")
@@ -68,5 +69,13 @@ public class User {
 
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

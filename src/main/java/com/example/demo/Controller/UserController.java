@@ -39,7 +39,12 @@ public class UserController {
 
     @DeleteMapping
     public ResponseEntity<?> deleteUser(@RequestParam long userId){
-        return new ResponseEntity<>(userService.delete(userId),HttpStatus.OK);
+        try {
+            String response = (String) userService.delete(userId);
+            return ResponseEntity.ok(response); // Sucesso
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @GetMapping("/filter")

@@ -1,14 +1,12 @@
 package com.example.demo.Services;
 
 
-import com.example.demo.Dto.TaskDTO;
 import com.example.demo.Dto.UserDTO;
 import com.example.demo.Entity.User;
 import com.example.demo.Repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -39,12 +37,17 @@ public class UserService implements GenericService {
         }
     }
 
+
+
     @Override
     public Object save(Object object) {
         if(object instanceof UserDTO userDTO){
-            User user = (User) convertToEntity(userDTO);
-            userRepository.save(user);
-            return convertToDTO(user);
+            if(!userRepository.existsByUsername(userDTO.getName())) {
+                User user = (User) convertToEntity(userDTO);
+                userRepository.save(user);
+                return convertToDTO(user);
+            }else
+                throw new IllegalArgumentException("User ja existe");
         }else{
             throw new IllegalArgumentException("Invalid object type. Expected User.");
         }
@@ -53,22 +56,28 @@ public class UserService implements GenericService {
     @Override
     public Object convertToEntity(Object object) {
         if(object instanceof UserDTO userDTO){
-            return modelMapper.map(userDTO,User.class);
+            //return modelMapper.map(userDTO,User.class);
+            User user = new User();
+            user.setName(userDTO.getName());
+            user.setAddress(userDTO.getAddress());
+            user.setEmail(userDTO.getEmail());
+            user.setTasks(null);
+            return user;
         }else{
             throw new IllegalArgumentException("Invalid object type. Expected UserDTO.");
         }
     }
 
     @Override
-    public Object delete(Long userId) {
+    public String delete(Long userId) {
         return userRepository.findById(userId).map(user -> {
-            if(user.getTasks().isEmpty()){
+            if (user.getTasks().isEmpty()) {
                 userRepository.deleteById(user.getId());
-                return convertToDTO(user);
-            }else{
-                throw new RuntimeException("user have tasks associated");
+                return "Usuário deletado com sucesso"; // Retorna uma mensagem de sucesso
+            } else {
+                throw new RuntimeException("O usuário tem tarefas associadas e não pode ser deletado.");
             }
-        }).orElseThrow(()-> new RuntimeException("User Not found"));
+        }).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     }
 
     public List<?> filter(Long idUser,String name, String address, String email){

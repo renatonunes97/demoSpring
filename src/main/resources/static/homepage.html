@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Static HTML with Spring Boot</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">Home Page Users</h1>
+    <button id="fetchHelloButton" class="btn btn-primary">Obter Mensagem</button>
+    <div id="responseContainer" class="mt-4 text-center"></div>
+</div>
+
+<div class="container mt-5">
+    <h1 class="text-center">Lista de Users</h1>
+    <table class="table table-striped mt-4">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Morada</th>
+            <th>Email</th>
+            <th>Ação</th>
+        </tr>
+        </thead>
+        <tbody id="userTableBody">
+        <!-- Os dados serão adicionados aqui dinamicamente -->
+        </tbody>
+    </table>
+</div>
+
+<script src="/js/script.js"></script>
+</body>
+</html>

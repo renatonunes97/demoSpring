@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface UserRepository extends JpaRepository<User,Long> {
 
-
+    @Query("SELECT COUNT(u) > 0 FROM Users u WHERE u.name = ?1")
+    boolean existsByUsername(String name);
 }
