@@ -44,7 +44,7 @@ public class UserService implements GenericService {
                 userRepository.save(user);
                 return convertToDTO(user);
             }else
-                throw new IllegalArgumentException("User ja existe");
+                throw new RuntimeException("User ja existe");
         }else{
             throw new IllegalArgumentException("Invalid object type. Expected User.");
         }

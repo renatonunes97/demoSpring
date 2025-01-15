@@ -81,7 +81,7 @@ public class TaskService implements GenericService {
             task.setStatus(statusTask);
             return task;
         }else{
-            throw new IllegalArgumentException("Invalid object type. Expected TaskDTO.");
+            throw new RuntimeException("Invalid object type. Expected TaskDTO.");
         }
     }
 
