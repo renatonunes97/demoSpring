@@ -1,5 +1,6 @@
 package com.example.demo.Entity;
 
+import com.example.demo.Dto.UserDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -30,6 +31,7 @@ public class User {
         this.address = address;
         this.email= email;
     }
+
 
     public Long getId() {
         return id;

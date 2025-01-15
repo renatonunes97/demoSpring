@@ -2,6 +2,7 @@ package com.example.demo.Controller;
 
 import com.example.demo.Dto.TaskDTO;
 import com.example.demo.Services.TaskService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/task")
+@Tag(name = "Task Controller", description = "Controllers")
 public class TaskController {
 
 
