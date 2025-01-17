@@ -4,6 +4,7 @@ import com.example.demo.Dto.UserDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "Users")
@@ -22,6 +23,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<Task> tasks;
+
+
+    private String roles;
 
     public User() {
     }
@@ -79,5 +83,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRoles() {
+        return roles;
+    }
+
+    public void setRoles(String roles) {
+        this.roles = roles;
     }
 }
