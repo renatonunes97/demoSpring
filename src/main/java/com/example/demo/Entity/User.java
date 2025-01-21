@@ -1,6 +1,7 @@
 package com.example.demo.Entity;
 
 import com.example.demo.Dto.UserDTO;
+import com.example.demo.Security.Roles;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -86,7 +87,11 @@ public class User {
     }
 
     public String getRoles() {
-        return roles;
+        if(roles.equalsIgnoreCase(Roles.ROLE_USER.name()))
+            return "USER";
+        else if(roles.equalsIgnoreCase(Roles.ROLE_ADMIN.name()))
+            return "ADMIN";
+        else return roles;
     }
 
     public void setRoles(String roles) {
