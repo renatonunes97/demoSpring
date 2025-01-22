@@ -87,11 +87,16 @@ public class User {
     }
 
     public String getRoles() {
-        if(roles.equalsIgnoreCase(Roles.ROLE_USER.name()))
-            return "USER";
-        else if(roles.equalsIgnoreCase(Roles.ROLE_ADMIN.name()))
-            return "ADMIN";
-        else return roles;
+       if(this.roles == null || roles.isEmpty()){
+           return "UNKNOWN";
+       }
+       try {
+           Roles roles = Roles.valueOf(this.roles.toUpperCase());
+           return roles.getRole();
+
+       }catch (IllegalArgumentException e) {
+           return roles;
+       }
     }
 
     public void setRoles(String roles) {
