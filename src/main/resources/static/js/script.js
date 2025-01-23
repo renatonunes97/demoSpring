@@ -1,29 +1,15 @@
-document.getElementById("fetchHelloButton").addEventListener("click", function () {
-    fetch('/api/users/hello')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.text();
-        })
-        .then(data => {
-            document.getElementById("responseContainer").innerHTML = `
-                <div class="alert alert-success" role="alert">
-                    ${data}
-                </div>
-            `;
-        })
-        .catch(error => {
-            document.getElementById("responseContainer").innerHTML = `
-                <div class="alert alert-danger" role="alert">
-                    Ocorreu um erro: ${error}
-                </div>
-            `;
-        });
-});
+function getJwtToken() {
+    return localStorage.getItem("token");
+}
+
 
 function fetchUsers() {
-    fetch('/api/users')
+   fetch('/api/users', {
+           method: 'GET',
+           headers: {
+               'Authorization': `Bearer ${getJwtToken()}` // Adiciona o token JWT no cabeçalho
+           }
+       })
         .then(response => {
             if (!response.ok) {
                 throw new Error(`Erro na requisição: ${response.status}`);
@@ -56,11 +42,35 @@ function fetchUsers() {
         });
 }
 
-// Função para excluir um usuário
+
+
+
+// Atualizando a requisição para incluir o token JWT
+document.getElementById("fetchHelloButton").addEventListener("click", function () {
+    const token = localStorage.getItem("token");
+    console.log("Token enviado no cabeçalho Authorization:", token);
+
+    fetch('/api/users/hello', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}` // Adiciona o token JWT no cabeçalho
+        }
+    })
+    .then(response => {
+        console.log("Resposta da API:", response);
+        return response.text();
+    })
+    .then(data => console.log("Dados recebidos:", data))
+    .catch(error => console.error("Erro:", error));
+});
+
 function deleteUser(userId) {
     if (confirm('Tem certeza que deseja excluir este usuário?')) {
         fetch(`/api/users?userId=${userId}`, {
             method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${getJwtToken()}` // Adiciona o token JWT no cabeçalho
+            }
         })
         .then(response => {
             if (response.ok) {
@@ -75,7 +85,7 @@ function deleteUser(userId) {
         })
         .catch(error => {
             console.error('Erro ao deletar o usuário:', error);
-            alert('Erro ao deletar o usuário!,'); // Exibe uma mensagem genérica de erro
+            alert('Erro ao deletar o usuário!'); // Exibe uma mensagem genérica de erro
         });
     }
 }

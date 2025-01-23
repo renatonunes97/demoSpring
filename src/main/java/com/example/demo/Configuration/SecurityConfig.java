@@ -2,6 +2,8 @@ package com.example.demo.Configuration;
 
 
 import com.example.demo.Repository.UserRepository;
+import com.example.demo.Security.Jwt.JwtAuthenticationEntryPoint;
+import com.example.demo.Security.Jwt.JwtAuthenticationFilter;
 import com.example.demo.Security.service.AuthenticationService;
 import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,74 +24,45 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
 
 
-   private final AuthenticationService authenticationService;
 
-    public SecurityConfig(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
+   private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-            http
-                    .csrf(AbstractHttpConfigurer::disable)// Desativa CSRF (opcional)
+        http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET,"/**").hasAnyRole("USER","ADMIN")
-                        .requestMatchers(HttpMethod.POST,"/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE,"/**").hasRole("ADMIN")// Permitir acesso público
-                        .anyRequest().authenticated() // Exige autenticação para outras rotas
+                        .requestMatchers("/js/**","/api/users/login").permitAll() // Allow these paths without authentication
+                        .anyRequest().authenticated() // Require authentication for other requests
                 )
-                .httpBasic(httpBasic -> {}) // Configura autenticação HTTP Basic
-                .formLogin(login -> login.defaultSuccessUrl("/homepage.html", true).permitAll()); // Página de login padrão e URL de sucesso
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint()) // Custom authentication error handling
+                )
+                .httpBasic(httpBasic -> {}) // HTTP Basic authentication configuration
+                .formLogin(login -> login
+                        //.defaultSuccessUrl("/homepage.html", true) // Redirect to /homepage.html after successful login
+                        .loginPage("/login.html")
+                        .permitAll() // Allow access to the login page for all
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter before UsernamePasswordAuthenticationFilter
 
         return http.build();
+
     }
-
-    @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-
-/*
-
-        UserDetails user = User.withUsername("user")
-                .password(passwordEncoder.encode("password"))
-                .roles("USER")
-                .build();
-
-        UserDetails admin = User.withUsername("admin")
-                .password(passwordEncoder.encode("admin"))
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(user, admin);
-
- */
-        return authenticationService;
-    }
-
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setUserDetailsService(authenticationService);
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        return daoAuthenticationProvider;
-    }
-
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager(); // Expondo o AuthenticationManager como um Bean
-    }
-
 
 }

@@ -2,6 +2,8 @@ package com.example.demo.Controller;
 
 import com.example.demo.Dto.UserDTO;
 import com.example.demo.Entity.User;
+import com.example.demo.Security.Jwt.TokenResponse;
+import com.example.demo.Security.service.AuthenticationService;
 import com.example.demo.Services.UserService;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,9 +27,21 @@ public class UserController {
 
     @Autowired
     private final UserService userService;
+    private final AuthenticationService authenticationService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AuthenticationService authenticationService) {
         this.userService = userService;
+        this.authenticationService = authenticationService;
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        try {
+            String token = authenticationService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
+            return ResponseEntity.ok(new TokenResponse(token));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas");
+        }
     }
 
 
