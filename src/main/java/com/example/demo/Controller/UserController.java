@@ -27,22 +27,14 @@ public class UserController {
 
     @Autowired
     private final UserService userService;
-    private final AuthenticationService authenticationService;
 
-    public UserController(UserService userService, AuthenticationService authenticationService) {
+
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.authenticationService = authenticationService;
+
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        try {
-            String token = authenticationService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
-            return ResponseEntity.ok(new TokenResponse(token));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas");
-        }
-    }
+
 
 
     @Operation(summary = "hello controller Users" , description = "retorna uma menssagem")

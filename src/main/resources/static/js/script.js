@@ -4,6 +4,7 @@ function getJwtToken() {
 
 
 function fetchUsers() {
+ console.log(localStorage.getItem("token"));
    fetch('/api/users', {
            method: 'GET',
            headers: {
@@ -47,13 +48,13 @@ function fetchUsers() {
 
 // Atualizando a requisição para incluir o token JWT
 document.getElementById("fetchHelloButton").addEventListener("click", function () {
-    const token = localStorage.getItem("token");
+
     console.log("Token enviado no cabeçalho Authorization:", token);
 
     fetch('/api/users/hello', {
         method: 'GET',
         headers: {
-            'Authorization': `Bearer ${token}` // Adiciona o token JWT no cabeçalho
+            'Authorization': `Bearer ${getJwtToken()}` // Adiciona o token JWT no cabeçalho
         }
     })
     .then(response => {
