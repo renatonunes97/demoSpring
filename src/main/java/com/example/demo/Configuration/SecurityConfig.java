@@ -5,6 +5,7 @@ import com.example.demo.Security.Jwt.JwtAuthenticationEntryPoint;
 import com.example.demo.Security.Jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,7 +29,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/js/**","/api/auth/**").permitAll()// Allow these paths without authentication
+                        .requestMatchers("/js/**","/api/auth/**").permitAll()
+                        //.requestMatchers(HttpMethod.POST).hasRole("ADMIN")// Allow these paths without authentication
                         .anyRequest().authenticated() // Require authentication for other requests
                 )
                 .exceptionHandling(ex -> ex
@@ -39,6 +41,10 @@ public class SecurityConfig {
                         //.defaultSuccessUrl("/homepage.html", true) // Redirect to /homepage.html after successful login
                         .loginPage("/login.html")
                         .permitAll() // Allow access to the login page for all
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .permitAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter before UsernamePasswordAuthenticationFilter
 

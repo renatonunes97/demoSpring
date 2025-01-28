@@ -4,13 +4,10 @@ function getJwtToken() {
 
 
 function fetchUsers() {
- console.log(localStorage.getItem("token"));
-   fetch('/api/users', {
-           method: 'GET',
-           headers: {
-               'Authorization': `Bearer ${getJwtToken()}` // Adiciona o token JWT no cabeçalho
-           }
-       })
+    // Chama a API diretamente, o navegador enviará automaticamente os cookies HTTP Only
+    fetch('/api/users', {
+        method: 'GET'
+    })
         .then(response => {
             if (!response.ok) {
                 throw new Error(`Erro na requisição: ${response.status}`);
@@ -43,51 +40,69 @@ function fetchUsers() {
         });
 }
 
-
-
-
-// Atualizando a requisição para incluir o token JWT
+/*
 document.getElementById("fetchHelloButton").addEventListener("click", function () {
-
-    console.log("Token enviado no cabeçalho Authorization:", token);
+    console.log("Enviando requisição para '/api/users/hello'");
 
     fetch('/api/users/hello', {
         method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${getJwtToken()}` // Adiciona o token JWT no cabeçalho
-        }
     })
-    .then(response => {
-        console.log("Resposta da API:", response);
-        return response.text();
-    })
-    .then(data => console.log("Dados recebidos:", data))
-    .catch(error => console.error("Erro:", error));
+        .then(response => {
+            console.log("Resposta da API:", response);
+            if (!response.ok) {
+                throw new Error(`Erro na requisição: ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(data => console.log("Dados recebidos:", data))
+        .catch(error => console.error("Erro ao buscar dados:", error));
 });
+*/
+  document.addEventListener('DOMContentLoaded', function () {
+            const statusLabel = document.getElementById("fetchHelloAuth");
+            statusLabel.textContent = "Carregando...";  // Atualiza a label para "Carregando..."
+
+            // Faz a requisição para a API
+            fetch('/api/users/hello', {
+                method: 'GET',
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro na requisição');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    // Atualiza a label com os dados recebidos da API
+                    statusLabel.textContent = `${data}`;
+                })
+                .catch(error => {
+                    // Caso haja um erro, exibe a mensagem de erro na label
+                    statusLabel.textContent = 'Erro ao buscar dados.';
+                    console.error('Erro ao buscar dados:', error);
+                });
+        });
+
 
 function deleteUser(userId) {
     if (confirm('Tem certeza que deseja excluir este usuário?')) {
         fetch(`/api/users?userId=${userId}`, {
             method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${getJwtToken()}` // Adiciona o token JWT no cabeçalho
-            }
         })
-        .then(response => {
-            if (response.ok) {
-                alert('Usuário deletado com sucesso!');
-                fetchUsers(); // Atualiza a lista de usuários
-            } else {
-                // Se a resposta não for OK, mostramos o erro retornado pelo backend
-                return response.text().then(message => {
-                    alert('Erro: ' + message); // Exibe a mensagem de erro
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Erro ao deletar o usuário:', error);
-            alert('Erro ao deletar o usuário!'); // Exibe uma mensagem genérica de erro
-        });
+            .then(response => {
+                if (response.ok) {
+                    alert('Usuário deletado com sucesso!');
+                    fetchUsers(); // Atualiza a lista de usuários
+                } else {
+                    return response.text().then(message => {
+                        alert('Erro: ' + message); // Exibe a mensagem de erro do servidor
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao deletar o usuário:', error);
+                alert('Erro ao deletar o usuário!'); // Mensagem genérica de erro
+            });
     }
 }
 

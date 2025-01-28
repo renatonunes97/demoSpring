@@ -3,6 +3,7 @@ package com.example.demo.Security.Jwt;
 import com.example.demo.Security.service.AuthenticationService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,31 +29,44 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        String token = null;
+
         String header = request.getHeader("Authorization");
-        request.getParameter("token");
-        System.out.println("Authorization Header: " + header);
 
         if (header != null && header.startsWith("Bearer ")) {
-            String token = header.substring(7);
-            System.out.println("Token extraído: " + token); // Log do token extraído
+            token = header.substring(7);
+        }
 
+        if (token == null && request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("jwt".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
+        if (token != null) {
             if (jwtTokenProvider.validateToken(token)) {
                 String username = jwtTokenProvider.getUsername(token);
-                System.out.println("Usuário autenticado: " + username); // Log do usuário do token
+                System.out.println("Usuário autenticado: " + username);
 
                 UserDetails userDetails = authenticationService.loadUserByUsername(username);
                 var authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
+                        userDetails, null, userDetails.getAuthorities()
+                );
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
+                // Configura o contexto de segurança
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
-                System.out.println("Token inválido ou expirado."); // Log de token inválido
+                System.out.println("Token inválido ou expirado.");
             }
         } else {
-            System.out.println("Cabeçalho Authorization ausente ou incorreto."); // Log de cabeçalho ausente
+            System.out.println("Nenhum token encontrado no cabeçalho ou cookies.");
         }
 
+        // 4. Continue a cadeia de filtros
         filterChain.doFilter(request, response);
     }
 }

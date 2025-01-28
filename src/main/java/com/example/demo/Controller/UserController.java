@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,8 +41,13 @@ public class UserController {
     @Operation(summary = "hello controller Users" , description = "retorna uma menssagem")
     @ApiResponse(responseCode = "200",description = "SUCESSO")
     @GetMapping("/hello")
-    public ResponseEntity<String> home(){
-        return ResponseEntity.ok("Hello Users");
+    public ResponseEntity<String> home(Authentication authentication){
+
+            if (authentication == null) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User not Auth");
+            }
+            return ResponseEntity.ok("Welcome: "+authentication.getName());
+
     }
 
     @Operation(summary = "Get all Users" , description = "retorna todos os users criados")
