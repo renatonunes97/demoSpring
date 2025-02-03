@@ -27,11 +27,13 @@ public class AuthController {
 
     private final AuthenticationService authenticationService;
     private final TokenBlackList tokenBlackList;
+    private final JwtTokenProvider jwtTokenProvider;
 
 
-    public AuthController(AuthenticationService authenticationService, TokenBlackList tokenBlackList) {
+    public AuthController(AuthenticationService authenticationService, TokenBlackList tokenBlackList, JwtTokenProvider jwtTokenProvider) {
         this.authenticationService = authenticationService;
         this.tokenBlackList = tokenBlackList;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
 
@@ -62,7 +64,7 @@ public class AuthController {
 
         if(ck != null){
             String token = ck.getValue();
-            long expirationTime = authenticationService.getJwtTokenProvider().getExpirationTime(token).getTime() - System.currentTimeMillis();
+            long expirationTime = jwtTokenProvider.getExpirationTime(token).getTime() - System.currentTimeMillis();
             tokenBlackList.addToBlacklist(token,expirationTime);
         }
 
