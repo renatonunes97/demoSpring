@@ -30,24 +30,20 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/js/**","/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/logout").permitAll()
                         //.requestMatchers(HttpMethod.POST).hasRole("ADMIN")// Allow these paths without authentication
                         .anyRequest().authenticated() // Require authentication for other requests
-                )
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint()) // Custom authentication error handling
-                )
+                )//.exceptionHandling(AbstractHttpConfigurer::disable)
+               // .exceptionHandling(ex -> ex
+               //       .authenticationEntryPoint(new JwtAuthenticationEntryPoint()) // Custom authentication error handling
+               // )
                 .httpBasic(httpBasic -> {}) // HTTP Basic authentication configuration
                 .formLogin(login -> login
                         //.defaultSuccessUrl("/homepage.html", true) // Redirect to /homepage.html after successful login
                         .loginPage("/login.html")
                         .permitAll() // Allow access to the login page for all
                 )
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .permitAll()
-                )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter before UsernamePasswordAuthenticationFilter
-
         return http.build();
 
     }

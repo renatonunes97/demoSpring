@@ -52,4 +52,8 @@ public class AuthenticationService implements UserDetailsService {
         }
         throw new UsernameNotFoundException("Usuário ou senha inválidos");
     }
+
+    public JwtTokenProvider getJwtTokenProvider() {
+        return jwtTokenProvider;
+    }
 }

@@ -108,3 +108,21 @@ function deleteUser(userId) {
 
 // Chama a função ao carregar a página
 document.addEventListener('DOMContentLoaded', fetchUsers);
+
+
+document.getElementById("logoutButton").addEventListener("click", function () {
+    fetch("/api/auth/logout", {
+        method: "GET",
+        credentials: "include" // Envia os cookies na requisição
+    })
+    .then((response) => {
+        if (response.redirected) {
+            window.location.href = response.url; // Redireciona corretamente
+        } else {
+            throw new Error("Erro ao realizar logout.");
+        }
+    })
+    .catch((error) => {
+        alert(error.message);
+    });
+});

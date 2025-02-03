@@ -1,11 +1,13 @@
 package com.example.demo.Security.Jwt;
 
 import com.example.demo.Security.service.AuthenticationService;
+import com.example.demo.Security.service.TokenBlackList;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,16 +16,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter{
 
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationService authenticationService;
+    private final TokenBlackList tokenBlackList;
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, AuthenticationService authenticationService) {
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, AuthenticationService authenticationService, TokenBlackList tokenBlackList, TokenBlackList tokenBlackList1) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.authenticationService = authenticationService;
+        this.tokenBlackList = tokenBlackList1;
     }
 
 
@@ -39,15 +44,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
         }
 
         if (token == null && request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("jwt".equals(cookie.getName())) {
-                    token = cookie.getValue();
-                    break;
-                }
+            Cookie jwtCookie = Arrays.stream(request.getCookies())
+                    .filter(cookie -> "jwt".equals(cookie.getName()))
+                    .findFirst()
+                    .orElse(null);
+
+            if(jwtCookie != null) {
+                token = jwtCookie.getValue();
             }
         }
+
+
+
         if (token != null) {
-            if (jwtTokenProvider.validateToken(token)) {
+            if (jwtTokenProvider.validateToken(token) && !tokenBlackList.isBlacklisted(token)) {
                 String username = jwtTokenProvider.getUsername(token);
                 System.out.println("Usuário autenticado: " + username);
 
@@ -60,13 +70,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
                 // Configura o contexto de segurança
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
-                System.out.println("Token inválido ou expirado.");
+                sendErrorResponse(response,HttpServletResponse.SC_UNAUTHORIZED, "Token inválido ou expirado.");
             }
-        } else {
-            System.out.println("Nenhum token encontrado no cabeçalho ou cookies.");
         }
 
         // 4. Continue a cadeia de filtros
         filterChain.doFilter(request, response);
+    }
+
+
+    private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
+        if (!response.isCommitted()) { // ⬅️ Garante que a resposta não foi enviada antes
+            response.setContentType("application/json");
+            response.setStatus(status);
+            response.getWriter().write("{\"error\": \"" + message + "\"}");
+            response.getWriter().flush();
+        }
     }
 }
