@@ -4,6 +4,7 @@ import com.example.demo.Dto.UserDTO;
 import com.example.demo.Entity.User;
 import com.example.demo.Security.Jwt.JwtTokenProvider;
 import com.example.demo.Services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,6 +18,8 @@ public class AuthenticationService implements UserDetailsService {
 
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
+
+
 
     public AuthenticationService(UserService userService, JwtTokenProvider jwtTokenProvider) {
         this.userService = userService;

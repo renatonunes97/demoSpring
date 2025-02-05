@@ -5,7 +5,7 @@ function getJwtToken() {
 
 function fetchUsers() {
     // Chama a API diretamente, o navegador enviará automaticamente os cookies HTTP Only
-    fetch('/api/users', {
+    fetch('/api/users/getUsers', {
         method: 'GET'
     })
         .then(response => {

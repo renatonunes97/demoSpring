@@ -35,9 +35,6 @@ public class UserController {
 
     }
 
-
-
-
     @Operation(summary = "hello controller Users" , description = "retorna uma menssagem")
     @ApiResponse(responseCode = "200",description = "SUCESSO")
     @GetMapping("/hello")
@@ -56,6 +53,14 @@ public class UserController {
     public List<?> getAllUsers(){
         return userService.getAll();
     }
+
+    @Operation(summary = "Get Users" , description = "retorna todos os users menos o UserAuth")
+    @ApiResponse(responseCode = "200",description = "SUCESSO")
+    @GetMapping("/getUsers")
+    public List<?> getUsers(Authentication authentication){
+        return userService.getUsers(authentication);
+    }
+
 
     @Operation(summary = "Insert User")
     @ApiResponses(value = {

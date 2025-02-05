@@ -17,6 +17,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         System.out.println(response.getWriter());
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().write("{\"error\": \"Acesso negado: credenciais inválidas ou token ausente\"}");
+        response.getWriter().write("Acesso negado: credenciais invalidas");
     }
 }

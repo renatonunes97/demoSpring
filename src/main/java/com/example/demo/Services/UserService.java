@@ -2,9 +2,12 @@ package com.example.demo.Services;
 import com.example.demo.Dto.UserDTO;
 import com.example.demo.Entity.User;
 import com.example.demo.Repository.UserRepository;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements GenericService {
@@ -22,6 +25,15 @@ public class UserService implements GenericService {
     @Override
     public List<User> getAll(){
         return userRepository.findAll();
+    }
+
+
+    public List<User> getUsers(Authentication authentication){
+        User userAuth = (User) getUser(authentication.getName());
+        return userRepository.findAll()
+                .stream()
+                .filter(user -> !Objects.equals(user.getId(), userAuth.getId()))
+                .collect(Collectors.toList());
     }
 
     public Object getUser(String username){
