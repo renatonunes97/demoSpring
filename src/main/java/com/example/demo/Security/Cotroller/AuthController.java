@@ -1,14 +1,15 @@
 package com.example.demo.Security.Cotroller;
 
 
-import com.auth0.jwt.JWT;
 import com.example.demo.Controller.LoginRequest;
+import com.example.demo.Dto.UserDTO;
 import com.example.demo.Security.Jwt.JwtTokenProvider;
 import com.example.demo.Security.service.AuthenticationService;
 import com.example.demo.Security.service.TokenBlackList;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -42,6 +43,7 @@ public class AuthController {
 
             String token = authenticationService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
             // Cria o cookie
+
             ResponseCookie cookie = ResponseCookie.from("jwt", token)
                     .httpOnly(true)
                     .secure(true) // Somente para HTTPS
@@ -82,6 +84,20 @@ public class AuthController {
         return  ResponseEntity.status(HttpStatus.FOUND)
                 .header(HttpHeaders.LOCATION, "/login.html")
                 .build();
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody @Valid UserDTO userDTO){
+        try {
+            String message = authenticationService.register(userDTO);
+            Map<String, String> responseBody = new HashMap<>();
+            responseBody.put("redirectUrl", "/login.html");
+            responseBody.put("response", message);
+            return ResponseEntity.ok(responseBody);
+
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
 

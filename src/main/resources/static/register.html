@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="card shadow p-4">
+        <h2 class="text-center">Registo</h2>
+        <form id="registerForm">
+            <div class="mb-3">
+                <label for="name" class="form-label">Nome</label>
+                <input type="text" id="name" class="form-control" required minlength="2">
+                <div class="invalid-feedback">O nome deve ter pelo menos 2 caracteres.</div>
+            </div>
+            <div class="mb-3">
+                <label for="address" class="form-label">Endereço</label>
+                <input type="text" id="address" class="form-control" required minlength="5">
+                <div class="invalid-feedback">O endereço deve ter pelo menos 5 caracteres.</div>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" class="form-control" required>
+                <div class="invalid-feedback">O email deve ser válido.</div>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Senha</label>
+                <input type="password" id="password" class="form-control" required>
+                <div class="invalid-feedback">A senha não pode estar vazia.</div>
+            </div>
+            <button type="submit" class="btn btn-success w-100">Registrar</button>
+        </form>
+        <div class="text-center mt-3">
+            <a href="login.html">Já tem conta? Faça login</a>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('registerForm').addEventListener('submit', async function (event) {
+     event.preventDefault(); // Impede o recarregamento da página
+
+     const name = document.getElementById('name').value;
+     const email = document.getElementById('email').value;
+     const password = document.getElementById('password').value;
+     const address = document.getElementById('address').value;
+
+     const response = await fetch('/api/auth/register', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({ name, email, password, address })
+     });
+
+     if (response.ok) {
+         const data = await response.json();
+         window.location.href = data.redirectUrl; // Redireciona para a página de login
+     } else {
+         const errorMessage = await response.text();
+         document.getElementById('registerError').innerText = errorMessage;
+     }
+ });
+
+</script>
+</body>
+</html>

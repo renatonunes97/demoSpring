@@ -2,22 +2,21 @@ package com.example.demo.Services;
 import com.example.demo.Dto.UserDTO;
 import com.example.demo.Entity.User;
 import com.example.demo.Repository.UserRepository;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
 public class UserService implements GenericService {
 
-    @Autowired
     private final UserRepository userRepository;
 
-    @Autowired
-    private ModelMapper modelMapper;
+
+
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+
     }
 
     @Override
@@ -25,10 +24,14 @@ public class UserService implements GenericService {
         return userRepository.findAll();
     }
 
+    public Object getUser(String username){
+        return userRepository.findByUsername(username).orElse(null);
+    }
+
     @Override
     public Object convertToDTO(Object object) {
         if(object instanceof User user) {
-            return new UserDTO(user.getId(),user.getName(),user.getAddress(),user.getEmail());
+            return new UserDTO(user.getId(),user.getName(),user.getAddress(), user.getPassword(),user.getEmail());
         }else {
             throw new IllegalArgumentException("Invalid object type. Expected User.");
         }
@@ -57,7 +60,9 @@ public class UserService implements GenericService {
             User user = new User();
             user.setName(userDTO.getName());
             user.setAddress(userDTO.getAddress());
+            user.setPassword( new BCryptPasswordEncoder().encode(userDTO.getPassword()));
             user.setEmail(userDTO.getEmail());
+            user.setRoles("ROLE_USER");
             user.setTasks(null);
             return user;
         }else{

@@ -17,6 +17,9 @@ public class UserDTO {
     @Size(min = 5, message = "user name should have at least 2 characters")
     private String address;
 
+    @NotEmpty(message = "Not empty Password")
+    private String password;
+
     @NotEmpty(message = "Not empty Email")
     @Email(message = "Email must be valid")
     private String email;
@@ -24,12 +27,14 @@ public class UserDTO {
     public UserDTO() {
     }
 
-    public UserDTO(long id,String name, String address, String email) {
+    public UserDTO(long id,String name, String address, String password, String email) {
         this.id = id;
         this.name = name;
         this.address = address;
+        this.password = password;
         this.email= email;
     }
+
 
     public String getName() {
         return name;
@@ -61,5 +66,13 @@ public class UserDTO {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

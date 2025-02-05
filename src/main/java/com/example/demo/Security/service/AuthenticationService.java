@@ -1,34 +1,32 @@
 package com.example.demo.Security.service;
 
+import com.example.demo.Dto.UserDTO;
 import com.example.demo.Entity.User;
-import com.example.demo.Repository.UserRepository;
 import com.example.demo.Security.Jwt.JwtTokenProvider;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.Services.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class AuthenticationService implements UserDetailsService {
 
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthenticationService(UserRepository userRepository, JwtTokenProvider jwtTokenProvider) {
-        this.userRepository = userRepository;
+    public AuthenticationService(UserService userService, JwtTokenProvider jwtTokenProvider) {
+        this.userService = userService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> userOptional = userRepository.findByUsername(username);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
+       User user = (User) userService.getUser(username);
+        if (user !=  null) {
             return org.springframework.security.core.userdetails.User.builder()
                     .username(user.getName())
                     .password(user.getPassword())
@@ -42,9 +40,8 @@ public class AuthenticationService implements UserDetailsService {
 
 
     public String authenticate(String username, String password) {
-        Optional<User> userOptional = userRepository.findByUsername(username);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
+        User user = (User) userService.getUser(username);
+        if (user !=  null) {
             if (new BCryptPasswordEncoder().matches(password, user.getPassword())) {
                 // Gera o token e retorna
                 return jwtTokenProvider.generateToken(user.getName(), user.getRoles());
@@ -53,5 +50,13 @@ public class AuthenticationService implements UserDetailsService {
         throw new UsernameNotFoundException("Usuário ou senha inválidos");
     }
 
+    public String register(UserDTO userDTO) {
+        try {
+          User user = (User) userService.save(userDTO);
+          return "User criado "+ user.getName()+ "com sucesso";
+        }catch (Exception e){
+            return e.getMessage();
+        }
+    }
 
 }
