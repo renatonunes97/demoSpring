@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User,Long> {
 
-    @Query("SELECT COUNT(u) > 0 FROM Users u WHERE u.name = ?1")
-    boolean existsByUsername(String name);
+    //@Query("SELECT COUNT(u) > 0 FROM Users u WHERE u.name = ?1")
+    boolean existsByName(String name);
 
-    @Query("SELECT u FROM Users u WHERE u.name = ?1")
-    Optional<User> findByUsername(String username);
+    //@Query("SELECT u FROM Users u WHERE u.name = ?1")
+    Optional<User> findByName(String username);
 }

@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Size;
 public class UserDTO {
 
 
-    private long id;
 
     @NotEmpty(message = "Not empty name")
     @Size(min = 2, message = "user name should have at least 2 characters")
@@ -23,6 +22,7 @@ public class UserDTO {
     @NotEmpty(message = "Not empty Email")
     @Email(message = "Email must be valid")
     private String email;
+
 
     public UserDTO() {
     }
@@ -54,13 +54,13 @@ public class UserDTO {
         this.email = email;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
+//    public Long getId() {
+//        return id;
+//    }
+//
+//    public void setId(long id) {
+//        this.id = id;
+//    }
 
     public String getPassword() {
         return password;
@@ -69,4 +69,5 @@ public class UserDTO {
     public void setPassword(String password) {
         this.password = password;
     }
+
 }

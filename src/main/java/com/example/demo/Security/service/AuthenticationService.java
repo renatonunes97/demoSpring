@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthenticationService implements UserDetailsService {
@@ -55,11 +56,12 @@ public class AuthenticationService implements UserDetailsService {
         throw new UsernameNotFoundException("Usuário ou senha inválidos");
     }
 
+    @Transactional
     public String register(UserDTO userDTO) {
         try {
             userDTO.setPassword(passwordEncoder().encode(userDTO.getPassword()));
             User user = (User) userService.save(userDTO);
-          return "User criado "+ user.getName()+ "com sucesso";
+          return "User criado "+ user.getName()+ " com sucesso";
         }catch (Exception e){
             return e.getMessage();
         }

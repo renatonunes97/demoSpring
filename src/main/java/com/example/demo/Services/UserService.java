@@ -1,11 +1,15 @@
 package com.example.demo.Services;
 import com.example.demo.Dto.UserDTO;
+import com.example.demo.Entity.Roles;
 import com.example.demo.Entity.User;
 import com.example.demo.Repository.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -39,18 +43,18 @@ public class UserService implements GenericService {
     }
 
     public Object getUser(String username){
-        return userRepository.findByUsername(username).orElse(null);
+        return userRepository.findByName(username).orElse(null);
     }
 
     @Override
     public Object convertToDTO(Object object) {
         if(object instanceof User user) {
             UserDTO userDTO = new UserDTO();
-            userDTO.setId(user.getId());
+            //userDTO.setId(user.getId());
             userDTO.setName(user.getName());
-            userDTO.setPassword(userDTO.getPassword());
-            userDTO.setAddress(userDTO.getAddress());
-            userDTO.setEmail(userDTO.getEmail());
+            userDTO.setPassword(user.getPassword());
+            userDTO.setAddress(user.getAddress());
+            userDTO.setEmail(user.getEmail());
             return userDTO;
         }else {
             throw new IllegalArgumentException("Invalid object type. Expected User.");
@@ -60,12 +64,13 @@ public class UserService implements GenericService {
 
 
     @Override
+    @Transactional
     public Object save(Object object) {
         if(object instanceof UserDTO userDTO){
-            if(!userRepository.existsByUsername(userDTO.getName())) {
+            if(!userRepository.existsByName(userDTO.getName())) {
                 User user = (User) convertToEntity(userDTO);
                 userRepository.save(user);
-                return convertToDTO(user);
+                return user;
             }else
                 throw new RuntimeException("User ja existe");
         }else{
@@ -76,13 +81,16 @@ public class UserService implements GenericService {
     @Override
     public Object convertToEntity(Object object) {
         if(object instanceof UserDTO userDTO){
+
+
+            //ModelMapper modelMapper = new ModelMapper();
             //return modelMapper.map(userDTO,User.class);
             User user = new User();
             user.setName(userDTO.getName());
             user.setAddress(userDTO.getAddress());
             user.setPassword(userDTO.getPassword());
             user.setEmail(userDTO.getEmail());
-            user.setRoles("ROLE_USER");
+            user.setRoles(Roles.ROLE_USER.name());
             user.setTasks(null);
             return user;
         }else{

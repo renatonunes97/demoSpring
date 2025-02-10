@@ -31,11 +31,6 @@ public class User {
     public User() {
     }
 
-    public User(long id, String name, String address, String email) {
-        this.name = name;
-        this.address = address;
-        this.email= email;
-    }
 
 
     public Long getId() {
