@@ -27,13 +27,7 @@ public class UserDTO {
     public UserDTO() {
     }
 
-    public UserDTO(long id,String name, String address, String password, String email) {
-        this.id = id;
-        this.name = name;
-        this.address = address;
-        this.password = password;
-        this.email= email;
-    }
+
 
 
     public String getName() {

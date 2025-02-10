@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: demo
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  redis:
+    host: host.docker.internal
+
+logging:
+  level:
+    root: INFO
+    org:
+      springframework:
+        validation: DEBUG
+        security: DEBUG
+        springframework: ERROR
+    com:
+      example:
+        demo: DEBUG

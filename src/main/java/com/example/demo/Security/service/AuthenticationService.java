@@ -5,6 +5,7 @@ import com.example.demo.Entity.User;
 import com.example.demo.Security.Jwt.JwtTokenProvider;
 import com.example.demo.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AuthenticationService implements UserDetailsService {
+
 
 
     private final UserService userService;
@@ -45,7 +47,7 @@ public class AuthenticationService implements UserDetailsService {
     public String authenticate(String username, String password) {
         User user = (User) userService.getUser(username);
         if (user !=  null) {
-            if (new BCryptPasswordEncoder().matches(password, user.getPassword())) {
+            if (passwordEncoder().matches(password, user.getPassword())) {
                 // Gera o token e retorna
                 return jwtTokenProvider.generateToken(user.getName(), user.getRoles());
             }
@@ -55,11 +57,16 @@ public class AuthenticationService implements UserDetailsService {
 
     public String register(UserDTO userDTO) {
         try {
-          User user = (User) userService.save(userDTO);
+            userDTO.setPassword(passwordEncoder().encode(userDTO.getPassword()));
+            User user = (User) userService.save(userDTO);
           return "User criado "+ user.getName()+ "com sucesso";
         }catch (Exception e){
             return e.getMessage();
         }
+    }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }

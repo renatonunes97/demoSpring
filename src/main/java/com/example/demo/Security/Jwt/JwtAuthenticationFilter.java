@@ -25,7 +25,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
     private final AuthenticationService authenticationService;
     private final TokenBlackList tokenBlackList;
 
-    @Autowired
+
+
     public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, AuthenticationService authenticationService, TokenBlackList tokenBlackList) {
 
         this.jwtTokenProvider = jwtTokenProvider;

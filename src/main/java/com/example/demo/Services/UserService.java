@@ -4,6 +4,7 @@ import com.example.demo.Entity.User;
 import com.example.demo.Repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService implements GenericService {
+
 
     private final UserRepository userRepository;
 
@@ -43,7 +45,13 @@ public class UserService implements GenericService {
     @Override
     public Object convertToDTO(Object object) {
         if(object instanceof User user) {
-            return new UserDTO(user.getId(),user.getName(),user.getAddress(), user.getPassword(),user.getEmail());
+            UserDTO userDTO = new UserDTO();
+            userDTO.setId(user.getId());
+            userDTO.setName(user.getName());
+            userDTO.setPassword(userDTO.getPassword());
+            userDTO.setAddress(userDTO.getAddress());
+            userDTO.setEmail(userDTO.getEmail());
+            return userDTO;
         }else {
             throw new IllegalArgumentException("Invalid object type. Expected User.");
         }
@@ -72,7 +80,7 @@ public class UserService implements GenericService {
             User user = new User();
             user.setName(userDTO.getName());
             user.setAddress(userDTO.getAddress());
-            user.setPassword( new BCryptPasswordEncoder().encode(userDTO.getPassword()));
+            user.setPassword(userDTO.getPassword());
             user.setEmail(userDTO.getEmail());
             user.setRoles("ROLE_USER");
             user.setTasks(null);

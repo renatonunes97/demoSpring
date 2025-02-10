@@ -14,9 +14,11 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
        // request.getUserPrincipal();
-        System.out.println(response.getWriter());
-        response.setContentType("application/json");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().write("Acesso negado: credenciais invalidas");
+        //System.out.println(response.getWriter());
+        if (!response.isCommitted()) {
+            response.setContentType("application/json");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Acesso negado: credenciais invalidas");
+        }
     }
 }
