@@ -72,22 +72,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 
                 // Configura o contexto de segurança
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-            } else {
-                sendErrorResponse(response,HttpServletResponse.SC_UNAUTHORIZED, "Token inválido ou expirado.");
             }
         }
-
         // 4. Continue a cadeia de filtros
         filterChain.doFilter(request, response);
     }
 
 
-    private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
-        if (!response.isCommitted()) { // ⬅️ Garante que a resposta não foi enviada antes
-            response.setContentType("application/json");
-            response.setStatus(status);
-            response.getWriter().write("{\"error\": \"" + message + "\"}");
-            response.getWriter().flush();
-        }
-    }
+
+//    private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
+//        if (!response.isCommitted()) { // ⬅️ Garante que a resposta não foi enviada antes
+//            response.setContentType("application/json");
+//            response.setStatus(status);
+//            response.getWriter().write("{\"error\": \"" + message + "\"}");
+//            response.getWriter().flush();
+//        }
+//    }
 }

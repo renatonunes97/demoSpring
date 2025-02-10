@@ -10,16 +10,19 @@ document.getElementById("loginForm").addEventListener("submit", function (event)
         body: JSON.stringify({ username, password }),
     })
         .then((response) => {
-            if (!response.ok) {
-                throw new Error("Credenciais inválidas");
-            }
-            return response.json();
+            return response.json().then((data) => {
+                if (!response.ok) {
+                    // Se a resposta não for OK, gera o erro a partir da resposta do servidor
+                    throw new Error(data.error || "Erro desconhecido. Tente novamente.");
+                }
+                return data;
+            });
         })
         .then((data) => {
-            // Redireciona com base na resposta do backend
+            localStorage.setItem("token", data.token);
             window.location.href = data.redirectUrl;
         })
         .catch((error) => {
-            alert(error.message);
+            alert("Erro: " + error.message); // Exibe o erro no alert
         });
 });

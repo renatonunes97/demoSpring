@@ -43,6 +43,7 @@ public class AuthController {
 
             String token = authenticationService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
             // Cria o cookie
+            response.addHeader("Authorization", "Bearer " + token);
 
             ResponseCookie cookie = ResponseCookie.from("jwt", token)
                     .httpOnly(true)
@@ -54,9 +55,9 @@ public class AuthController {
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
             Map<String, String> responseBody = new HashMap<>();
+            responseBody.put("token", token);
             responseBody.put("redirectUrl", "/homepage.html");
-
-        return ResponseEntity.ok(responseBody);
+            return ResponseEntity.ok(responseBody);
     }
 
     @GetMapping("/logout")

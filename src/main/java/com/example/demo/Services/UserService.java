@@ -81,18 +81,11 @@ public class UserService implements GenericService {
     @Override
     public Object convertToEntity(Object object) {
         if(object instanceof UserDTO userDTO){
-
-
-            //ModelMapper modelMapper = new ModelMapper();
-            //return modelMapper.map(userDTO,User.class);
-            User user = new User();
-            user.setName(userDTO.getName());
-            user.setAddress(userDTO.getAddress());
-            user.setPassword(userDTO.getPassword());
-            user.setEmail(userDTO.getEmail());
+            ModelMapper modelMapper = new ModelMapper();
+            User user =modelMapper.map(userDTO,User.class);
             user.setRoles(Roles.ROLE_USER.name());
-            user.setTasks(null);
             return user;
+
         }else{
             throw new IllegalArgumentException("Invalid object type. Expected UserDTO.");
         }

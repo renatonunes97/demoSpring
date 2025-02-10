@@ -6,6 +6,7 @@ import com.example.demo.Security.Jwt.JwtTokenProvider;
 import com.example.demo.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -53,7 +54,7 @@ public class AuthenticationService implements UserDetailsService {
                 return jwtTokenProvider.generateToken(user.getName(), user.getRoles());
             }
         }
-        throw new UsernameNotFoundException("Usuário ou senha inválidos");
+        throw new BadCredentialsException("Usuário ou senha inválidos");
     }
 
     @Transactional
