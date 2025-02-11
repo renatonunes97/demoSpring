@@ -1,5 +1,6 @@
 package com.example.demo.Exception;
 
+import com.example.demo.Dto.ResponseError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -15,9 +17,8 @@ public class GlobalExceptionHandler {
 
     // Captura erros de validação e argumentos inválidos
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
-        Map<String, String> response = new HashMap<>();
-        response.put("error", ex.getMessage());
+    public ResponseEntity<ResponseError> handleIllegalArgumentException(IllegalArgumentException ex) {
+        ResponseError response = new ResponseError(HttpStatus.BAD_REQUEST.value(),"Pedido incorreto", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 

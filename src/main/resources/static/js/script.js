@@ -92,20 +92,15 @@ function deleteUser(userId) {
         fetch(`/api/users?userId=${userId}`, {
             method: 'DELETE',
         })
-            .then(response => {
-                if (response.ok) {
-                    alert('Usuário deletado com sucesso!');
-                    fetchUsers(); // Atualiza a lista de usuários
-                } else {
-                    return response.text().then(message => {
-                        alert('Erro: ' + message); // Exibe a mensagem de erro do servidor
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Erro ao deletar o usuário:', error);
-                alert('Erro ao deletar o usuário!'); // Mensagem genérica de erro
-            });
+        .then(response => response.text()) // Converte a resposta para texto
+        .then(message => {
+            alert(message); // Exibe a mensagem retornada pelo backend
+            fetchUsers(); // Atualiza a lista de usuários
+        })
+        .catch(error => {
+            console.error('Erro ao deletar o usuário:', error);
+            alert('Erro ao deletar o usuário!'); // Mensagem genérica de erro
+        });
     }
 }
 

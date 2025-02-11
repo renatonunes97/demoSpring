@@ -54,19 +54,16 @@ public class AuthenticationService implements UserDetailsService {
                 return jwtTokenProvider.generateToken(user.getName(), user.getRoles());
             }
         }
-        throw new BadCredentialsException("Usuário ou senha inválidos");
+        throw new IllegalArgumentException("Usuário ou senha inválidos");
     }
 
     @Transactional
     public String register(UserDTO userDTO) {
-        try {
-            userDTO.setPassword(passwordEncoder().encode(userDTO.getPassword()));
-            User user = (User) userService.save(userDTO);
-          return "User criado "+ user.getName()+ " com sucesso";
-        }catch (Exception e){
-            return e.getMessage();
-        }
+        userDTO.setPassword(passwordEncoder().encode(userDTO.getPassword()));
+        User user = (User) userService.save(userDTO);
+        return "User criado "+ user.getName()+ " com sucesso";
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

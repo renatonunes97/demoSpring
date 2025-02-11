@@ -57,8 +57,8 @@ public class UserController {
     @Operation(summary = "Get Users" , description = "retorna todos os users menos o UserAuth")
     @ApiResponse(responseCode = "200",description = "SUCESSO")
     @GetMapping("/getUsers")
-    public List<?> getUsers(Authentication authentication){
-        return userService.getUsers(authentication);
+    public ResponseEntity<?> getUsers(Authentication authentication){
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUsers(authentication));
     }
 
 
@@ -76,8 +76,7 @@ public class UserController {
     @DeleteMapping
     public ResponseEntity<?> deleteUser(@RequestParam long userId){
         try {
-            String response = (String) userService.delete(userId);
-            return ResponseEntity.ok(response); // Sucesso
+            return ResponseEntity.ok().body(userService.delete(userId)); // Sucesso
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

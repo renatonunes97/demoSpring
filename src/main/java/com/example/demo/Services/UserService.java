@@ -2,6 +2,7 @@ package com.example.demo.Services;
 import com.example.demo.Dto.UserDTO;
 import com.example.demo.Entity.Roles;
 import com.example.demo.Entity.User;
+import com.example.demo.Repository.TaskRepository;
 import com.example.demo.Repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
@@ -19,13 +20,14 @@ public class UserService implements GenericService {
 
 
     private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
 
 
 
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, TaskRepository taskRepository) {
         this.userRepository = userRepository;
-
+        this.taskRepository = taskRepository;
     }
 
     @Override
@@ -72,7 +74,7 @@ public class UserService implements GenericService {
                 userRepository.save(user);
                 return user;
             }else
-                throw new RuntimeException("User ja existe");
+                throw new IllegalArgumentException("User ja existe");
         }else{
             throw new IllegalArgumentException("Invalid object type. Expected User.");
         }
@@ -91,16 +93,32 @@ public class UserService implements GenericService {
         }
     }
 
-    @Override
-    public String delete(Long userId) {
+    public String delete_Example(Long userId) {
         return userRepository.findById(userId).map(user -> {
             if (user.getTasks().isEmpty()) {
                 userRepository.deleteById(user.getId());
                 return "Usuário deletado com sucesso"; // Retorna uma mensagem de sucesso
             } else {
-                throw new RuntimeException("O usuário tem tarefas associadas e não pode ser deletado.");
+                throw new IllegalArgumentException("O usuário tem tarefas associadas e não pode ser deletado.");
             }
-        }).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        }).orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+    }
+
+    @Override
+    public String delete(Long userId) {
+       User user = userRepository.findById(userId).orElse(null);
+       if(user == null){
+           throw new IllegalArgumentException("Usuário não encontrado");
+       }
+       if(haveTasks(user)){
+           throw new IllegalArgumentException("O usuário tem tarefas associadas e não pode ser deletado.");
+       }
+       userRepository.deleteById(userId);
+       return "User: "+ user.getName() +" deleted";
+    }
+
+    public boolean haveTasks(User user){
+        return taskRepository.existsTaskByUser(user);
     }
 
     public List<?> filter(Long idUser,String name, String address, String email){
@@ -108,7 +126,7 @@ public class UserService implements GenericService {
                 .filter(user -> name == null || user.getName().contains(name))
                 .filter(user -> address == null || user.getAddress().contains(address))
                 .filter(user -> idUser == null || user.getId().equals(idUser))
-                .map(this::convertToDTO).toList();
+                .map(this::convertToDTO).collect(Collectors.toList());
     }
 
 

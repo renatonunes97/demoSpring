@@ -1,5 +1,6 @@
 package com.example.demo.Dto;
 
+import com.example.demo.Entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -25,6 +26,15 @@ public class UserDTO {
 
 
     public UserDTO() {
+    }
+
+    public User mapToEntity(){
+        User user = new User();
+        user.setName(this.name);
+        user.setPassword(this.password);
+        user.setEmail(this.email);
+        user.setAddress(this.getAddress());
+        return user;
     }
 
 
