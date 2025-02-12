@@ -89,7 +89,6 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Valid UserDTO userDTO){
-
             String message = authenticationService.register(userDTO);
             Map<String, String> responseBody = new HashMap<>();
             responseBody.put("redirectUrl", "/login.html");

@@ -13,7 +13,7 @@ document.getElementById("loginForm").addEventListener("submit", function (event)
             return response.json().then((data) => {
                 if (!response.ok) {
                     // Se a resposta não for OK, gera o erro a partir da resposta do servidor
-                    throw new Error(data.error || "Erro desconhecido. Tente novamente.");
+                    throw new Error(data.message || "Erro desconhecido. Tente novamente.");
                 }
                 return data;
             });

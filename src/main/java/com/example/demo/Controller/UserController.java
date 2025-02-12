@@ -23,6 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+//http://localhost:8080/api/users
 @Tag(name = "Users Controllers", description = " Controller")
 public class UserController {
 
@@ -64,8 +65,7 @@ public class UserController {
 
     @Operation(summary = "Insert User")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully inserted ",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = UserDTO.class)) }),
+            @ApiResponse(responseCode = "201", description = "Successfully inserted "),
             @ApiResponse(responseCode = "400", description = "Error in the information sent to the server or lack of mandatory information"),
     })
     @PostMapping
@@ -73,6 +73,11 @@ public class UserController {
         return new ResponseEntity<>(userService.save(userDTO),HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Delete User")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully Deleted "),
+            @ApiResponse(responseCode = "400", description = "Error in the information sent to the server or lack of mandatory information"),
+    })
     @DeleteMapping
     public ResponseEntity<?> deleteUser(@RequestParam long userId){
         try {
